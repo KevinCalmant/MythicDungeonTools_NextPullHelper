@@ -2,6 +2,16 @@
 
 All notable changes to this project are documented here. The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.7] - 2026-05-08
+
+### Added
+
+- Resizable beacon: drag the WoW-style resize grabber in the bottom-right corner to scale the whole beacon up or down (uniform scale, clamped to 0.5×–2×). The chosen size persists per scope (account-wide or per-character, matching the existing `beaconScope` setting). Drags are blocked while the beacon is locked.
+
+### Fixed
+
+- Beacon now closes automatically when the keystone is reset via the vote-to-abandon. Previously only `CHALLENGE_MODE_COMPLETED` (timed-out / finished runs) stopped tracking, so an aborted key left the beacon and tracking state visible until manually dismissed. `CHALLENGE_MODE_RESET` now routes through the same `Stop()` path.
+
 ## [1.1.6] - 2026-04-22
 
 ### Fixed
