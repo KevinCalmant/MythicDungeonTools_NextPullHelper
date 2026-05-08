@@ -125,6 +125,54 @@ local function handleTest()
   end
 end
 
+local function handleSettings()
+  if MDT_NPT.Settings and MDT_NPT.Settings.Open then
+    MDT_NPT.Settings:Open()
+  else
+    print(PREFIX..": settings panel not loaded yet.")
+  end
+end
+
+-- ============ key-binding actions ============
+-- Keep behaviour identical to the slash equivalents, minus the chat noise — these
+-- fire from key bindings or the right-click menu, so they should be silent.
+
+function MDT_NPT:ToggleBeacon()
+  local db = self:GetDB()
+  if not db or not db.beacon then return end
+  if db.beacon.enabled and self.Beacon and self.Beacon.frame and self.Beacon.frame:IsShown() then
+    db.beacon.enabled = false
+    self.Beacon:Hide()
+  else
+    db.beacon.enabled = true
+    if self.Beacon and self.Beacon.Update then self.Beacon:Update() end
+  end
+end
+
+function MDT_NPT:NextPullManual()
+  local state = self.state
+  if not state or not state.active then return end
+  for i, ps in ipairs(state.pullStates) do
+    if ps.state == self.PullState.ACTIVE or ps.state == self.PullState.NEXT then
+      self:MarkComplete(i)
+      return
+    end
+  end
+end
+
+function MDT_NPT:PrevPullManual()
+  if not self:IsActive() then return end
+  local idx = self:GetCurrentNextPull()
+  local target = idx and (idx - 1) or nil
+  if not target or target < 1 then return end
+  self:MarkIncomplete(target)
+end
+
+function MDT_NPT:ToggleBeaconLock()
+  local state = self:GetBeaconState()
+  if state then state.locked = not state.locked end
+end
+
 -- ============ command table ============
 
 commands = {
@@ -136,6 +184,7 @@ commands = {
   { name = "revert",   usage = "revert",      help = "undo the most recent pull completion",              handler = handleRevert },
   { name = "show",     usage = "show",        help = "enable and show the beacon HUD",                    handler = handleShow },
   { name = "hide",     usage = "hide",        help = "disable and hide the beacon HUD",                   handler = handleHide },
+  { name = "settings", usage = "settings",    help = "open the settings panel",                           handler = handleSettings },
   { name = "test",     usage = "test",        help = "run the integration test suite",                    handler = handleTest },
   { name = "help",     usage = "help",        help = "show this help message",                            handler = printHelp },
 }

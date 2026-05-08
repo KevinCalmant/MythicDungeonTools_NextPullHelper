@@ -2,6 +2,16 @@
 
 All notable changes to this project are documented here. The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-05-08
+
+### Added
+
+- Settings panel registered with Blizzard's native UI (Esc → Options → AddOns → "MDT Next Pull Tracker"). Open it from the right-click menu on the beacon, with `/npt settings`, or via the new "Open Settings" key binding. Surfaces every existing toggle (master enable, auto-start, lock, show upcoming, show for non-tanks, ask on start) plus a new opacity slider and a "Per Character / Account-wide" scope dropdown — settings that previously lived only in `SavedVariables` and the right-click menu.
+- Beacon opacity setting (`beacon.alpha`, 30%–100%): applied with `SetAlpha` on the parent frame so the whole HUD fades uniformly. Persists alongside the other beacon prefs.
+- "Reset Position & Size" entry in the beacon's right-click menu: re-anchors the beacon to its default top-center spot and clears any saved scale, without touching the lock state.
+- Key bindings under WoW's Esc → Key Bindings → Addons (header "MDT Next Pull Tracker"): Toggle Beacon, Next Pull, Previous Pull, Toggle Lock, Open Settings. The Next/Previous bindings reuse the same logic as the on-beacon control buttons, so step-forward/back works without aiming the cursor.
+- Right-click "Open Settings" entry on the beacon as a discoverability bridge from the context menu to the new panel.
+
 ## [1.1.7] - 2026-05-08
 
 ### Added
