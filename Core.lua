@@ -109,6 +109,7 @@ function MDT_NPT:Start(manual)
   eventFrame:RegisterEvent("SCENARIO_CRITERIA_UPDATE")
   eventFrame:RegisterEvent("SCENARIO_UPDATE")
   eventFrame:RegisterEvent("CHALLENGE_MODE_COMPLETED")
+  eventFrame:RegisterEvent("CHALLENGE_MODE_RESET")
 
   if pollTimer then pollTimer:Cancel() end
   pollTimer = C_Timer.NewTicker(1.0, function()
@@ -127,6 +128,7 @@ function MDT_NPT:Stop()
   eventFrame:UnregisterEvent("SCENARIO_CRITERIA_UPDATE")
   eventFrame:UnregisterEvent("SCENARIO_UPDATE")
   eventFrame:UnregisterEvent("CHALLENGE_MODE_COMPLETED")
+  eventFrame:UnregisterEvent("CHALLENGE_MODE_RESET")
 
   if pollTimer then
     pollTimer:Cancel()
@@ -168,7 +170,7 @@ eventFrame:SetScript("OnEvent", function(_, event, ...)
       MDT_NPT:Start()
     end
     maybePromptForBeacon()
-  elseif event == "CHALLENGE_MODE_COMPLETED" then
+  elseif event == "CHALLENGE_MODE_COMPLETED" or event == "CHALLENGE_MODE_RESET" then
     MDT_NPT:Stop()
   elseif event == "SCENARIO_CRITERIA_UPDATE" or event == "SCENARIO_UPDATE" then
     if Scenario and Scenario.onScenarioForcesUpdate then
