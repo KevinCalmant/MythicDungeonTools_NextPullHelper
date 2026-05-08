@@ -6,6 +6,80 @@ local Beacon = MDT_NPT.Beacon
 local Minimap = MDT_NPT.BeaconMinimap
 local PullState = MDT_NPT.PullState
 local pairs, ipairs, unpack, string_format, tonumber = pairs, ipairs, unpack, string.format, tonumber
+local math_abs = math.abs
+
+local FRAME_BASE_W, FRAME_BASE_H = 360, 166
+local SCALE_MIN, SCALE_MAX = 0.5, 2.0
+
+---Drives uniform `SetScale` on the parent from cursor drag, then persists the
+---final scale on release. Locked beacons ignore the drag.
+local function createResizeGrip(parent)
+  local grip = CreateFrame("Button", nil, parent)
+  grip:SetSize(16, 16)
+  grip:SetPoint("BOTTOMRIGHT", parent, "BOTTOMRIGHT", 0, 0)
+  grip:SetFrameLevel(parent:GetFrameLevel() + 5)
+  grip:SetAlpha(0)
+  grip:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Up")
+  grip:SetHighlightTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Highlight")
+  grip:SetPushedTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Down")
+
+  -- Per-axis cursor delta → scale: drag of one frame-edge worth of raw pixels
+  -- equals one base-scale unit of growth, so the grip tracks the cursor on the
+  -- dominant axis. The non-dominant axis is ignored to avoid double-counting on
+  -- diagonal drags.
+  local function applyScaleFromDrag(self)
+    local nx, ny = GetCursorPosition()
+    local dx = nx - self.startX
+    local dy = self.startY - ny
+    local denom = FRAME_BASE_W * self.uiScale
+    local dsX = dx / denom
+    local dsY = dy / (FRAME_BASE_H * self.uiScale)
+    local ds = (math_abs(dsX) > math_abs(dsY)) and dsX or dsY
+    local newScale = self.startScale + ds
+    if newScale < SCALE_MIN then newScale = SCALE_MIN end
+    if newScale > SCALE_MAX then newScale = SCALE_MAX end
+    parent:SetScale(newScale)
+  end
+
+  grip:SetScript("OnMouseDown", function(self, button)
+    if button ~= "LeftButton" then return end
+    if MDT_NPT:GetBeaconState().locked then return end
+    self.dragging = true
+    self.startX, self.startY = GetCursorPosition()
+    self.startScale = parent:GetScale()
+    self.uiScale = UIParent:GetEffectiveScale()
+    self:SetScript("OnUpdate", applyScaleFromDrag)
+  end)
+
+  grip:SetScript("OnMouseUp", function(self, button)
+    if button ~= "LeftButton" then return end
+    if not self.dragging then return end
+    self.dragging = false
+    self:SetScript("OnUpdate", nil)
+    MDT_NPT:GetBeaconState().scale = parent:GetScale()
+    -- The drag suppressed the normal OnLeave fade, so re-evaluate now.
+    if not MouseIsOver(parent) then
+      local onLeave = parent:GetScript("OnLeave")
+      if onLeave then onLeave(parent) end
+    elseif not MouseIsOver(self) then
+      self:SetAlpha(0.7)
+    end
+  end)
+
+  grip:SetScript("OnEnter", function(self)
+    self:SetAlpha(1)
+    GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT")
+    GameTooltip:SetText(L["Resize"], 1, 1, 1)
+    GameTooltip:Show()
+  end)
+
+  grip:SetScript("OnLeave", function(self)
+    if not self.dragging then self:SetAlpha(0.7) end
+    GameTooltip:Hide()
+  end)
+
+  return grip
+end
 
 ---Builds the Beacon's UI frame and all its child widgets. Caller owns the returned frame.
 local function create()
@@ -326,10 +400,13 @@ local function create()
     end
   )
 
+  beaconFrame.resizeGrip = createResizeGrip(beaconFrame)
+
   beaconFrame:SetScript("OnEnter", function(self)
     self.completeBtn:SetAlpha(0.7)
     self.skipBtn:SetAlpha(0.7)
     self.revertBtn:SetAlpha(0.7)
+    self.resizeGrip:SetAlpha(0.7)
   end)
 
   beaconFrame:SetScript("OnLeave", function(self)
@@ -337,6 +414,7 @@ local function create()
       self.completeBtn:SetAlpha(0)
       self.skipBtn:SetAlpha(0)
       self.revertBtn:SetAlpha(0)
+      self.resizeGrip:SetAlpha(0)
     end
   end)
 
