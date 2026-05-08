@@ -97,6 +97,7 @@ local function create()
   local anchor = MDT_NPT:GetBeaconState()
   beaconFrame:SetPoint(anchor.anchorFrom, UIParent, anchor.anchorTo, anchor.xoffset, anchor.yoffset)
   beaconFrame:SetScale(anchor.scale)
+  beaconFrame:SetAlpha((db and db.beacon and db.beacon.alpha) or 1.0)
 
   local background = beaconFrame:CreateTexture(nil, "BACKGROUND")
   background:SetAllPoints()
@@ -316,6 +317,17 @@ local function create()
         rootDescription:CreateCheckbox(L["Show Upcoming"], function() return db.beacon.showUpcoming end, function()
           db.beacon.showUpcoming = not db.beacon.showUpcoming
           Beacon:Update()
+        end)
+        rootDescription:CreateButton(L["Open Settings"], function()
+          if MDT_NPT.Settings and MDT_NPT.Settings.Open then
+            MDT_NPT.Settings:Open()
+          end
+        end)
+        rootDescription:CreateButton(L["Reset Position & Size"], function()
+          if MDT_NPT.Beacon and MDT_NPT.Beacon.ResetPosition then
+            MDT_NPT.Beacon:ResetPosition()
+            MDT_NPT.Beacon:Update()
+          end
         end)
         rootDescription:CreateButton(L["Hide Beacon"], function()
           db.beacon.enabled = false

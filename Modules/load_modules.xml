@@ -9,4 +9,5 @@
   <Script file='BeaconMinimap.lua'/>
   <Script file='BeaconFrame.lua'/>
   <Script file='BeaconUpdate.lua'/>
+  <Script file='Settings.lua'/>
 </Ui>

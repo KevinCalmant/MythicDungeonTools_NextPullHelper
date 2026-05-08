@@ -20,6 +20,7 @@ local defaultSavedVars = {
     beacon = {
       enabled = true,
       scale = 1.0,
+      alpha = 1.0,
       anchorFrom = "TOP",
       anchorTo = "TOP",
       xoffset = 0,
