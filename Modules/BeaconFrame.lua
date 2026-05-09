@@ -241,6 +241,7 @@ local function create()
   -- ≤4 mobs → single row at 34x34; >4 mobs → 2x4 grid at 28x28.
   beaconFrame.portraits = {}
   beaconFrame.portraitOutlines = {}
+  beaconFrame.portraitHovers = {}
   beaconFrame.portraitInfoPanelX = infoPanelX -- stored so the render fn can re-anchor
   for i = 1, 8 do
     local portrait = beaconFrame:CreateTexture(nil, "ARTWORK")
@@ -256,6 +257,21 @@ local function create()
     outline:SetPoint("CENTER", portrait, "CENTER", 0, 0)
     outline:Hide()
     beaconFrame.portraitOutlines[i] = outline
+
+    -- Transparent hover region matching the portrait, used to display the mob
+    -- name on tooltip. Textures don't receive mouse input, so we overlay a frame.
+    local hover = CreateFrame("Frame", nil, beaconFrame)
+    hover:SetAllPoints(portrait)
+    hover:EnableMouse(true)
+    hover:Hide()
+    hover:SetScript("OnEnter", function(self)
+      if not self.mobName then return end
+      GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT")
+      GameTooltip:SetText(self.mobName, 1, 1, 1)
+      GameTooltip:Show()
+    end)
+    hover:SetScript("OnLeave", function() GameTooltip:Hide() end)
+    beaconFrame.portraitHovers[i] = hover
   end
 
   -- Progress bar (for active pull)
@@ -453,6 +469,9 @@ local function renderRouteComplete(frame, state, totalForcesMax)
   for i = 1, #frame.portraits do
     frame.portraits[i]:Hide()
     frame.portraitOutlines[i]:Hide()
+    if frame.portraitHovers and frame.portraitHovers[i] then
+      frame.portraitHovers[i]:Hide()
+    end
   end
   for _, dot in ipairs(frame.dots) do dot:Hide() end
   Minimap.drawCurrentPullOutline(frame, nil)
@@ -547,14 +566,24 @@ local function renderEnemiesProtraits(frame, pull, enemies)
   local count = #enemyIndices
   for i = 1, count do
     layoutPortraitSlot(frame, i, count)
-    local displayId = enemies[enemyIndices[i]].displayId or 39490
+    local enemy = enemies[enemyIndices[i]]
+    local displayId = enemy.displayId or 39490
     SetPortraitTextureFromCreatureDisplayID(frame.portraits[i], displayId)
     frame.portraits[i]:Show()
     frame.portraitOutlines[i]:Show()
+    if frame.portraitHovers and frame.portraitHovers[i] then
+      local rawName = enemy.name
+      frame.portraitHovers[i].mobName = rawName and ((MDT.L and MDT.L[rawName]) or rawName) or nil
+      frame.portraitHovers[i]:Show()
+    end
   end
   for i = count + 1, PORTRAIT_MAX do
     frame.portraits[i]:Hide()
     frame.portraitOutlines[i]:Hide()
+    if frame.portraitHovers and frame.portraitHovers[i] then
+      frame.portraitHovers[i].mobName = nil
+      frame.portraitHovers[i]:Hide()
+    end
   end
 end
 

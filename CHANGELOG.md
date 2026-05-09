@@ -11,6 +11,7 @@ All notable changes to this project are documented here. The format is based on 
 - "Reset Position & Size" entry in the beacon's right-click menu: re-anchors the beacon to its default top-center spot and clears any saved scale, without touching the lock state.
 - Key bindings under WoW's Esc → Key Bindings → Addons (header "MDT Next Pull Tracker"): Toggle Beacon, Next Pull, Previous Pull, Toggle Lock, Open Settings. The Next/Previous bindings reuse the same logic as the on-beacon control buttons, so step-forward/back works without aiming the cursor.
 - Right-click "Open Settings" entry on the beacon as a discoverability bridge from the context menu to the new panel.
+- Mob name tooltip on portrait hover: hovering an enemy portrait on the beacon now surfaces the mob's localized name via the standard `GameTooltip`, so you can identify which mob is which without having to recognize every model. A transparent hover region is overlaid on each portrait (textures don't receive mouse input on their own).
 
 ### Fixed
 
