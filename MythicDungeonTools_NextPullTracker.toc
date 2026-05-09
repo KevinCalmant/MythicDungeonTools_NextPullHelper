@@ -16,7 +16,6 @@ locales.xml
 Utils\load_utils.xml
 Modules\load_modules.xml
 Core.lua
-Bindings.xml
 #@do-not-package@
 Developer\load_developer.xml
 #@end-do-not-package@

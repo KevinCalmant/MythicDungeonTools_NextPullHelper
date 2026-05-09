@@ -1,17 +1,17 @@
-<Bindings xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\FrameXML\UI.xsd">
+<Bindings>
   <Binding name="MDTNPT_TOGGLE" header="MDTNPT_HEADER" category="ADDONS">
     if MDT_NPT and MDT_NPT.ToggleBeacon then MDT_NPT:ToggleBeacon() end
   </Binding>
-  <Binding name="MDTNPT_NEXT" header="MDTNPT_HEADER" category="ADDONS">
+  <Binding name="MDTNPT_NEXT" category="ADDONS">
     if MDT_NPT and MDT_NPT.NextPullManual then MDT_NPT:NextPullManual() end
   </Binding>
-  <Binding name="MDTNPT_PREV" header="MDTNPT_HEADER" category="ADDONS">
+  <Binding name="MDTNPT_PREV" category="ADDONS">
     if MDT_NPT and MDT_NPT.PrevPullManual then MDT_NPT:PrevPullManual() end
   </Binding>
-  <Binding name="MDTNPT_LOCK" header="MDTNPT_HEADER" category="ADDONS">
+  <Binding name="MDTNPT_LOCK" category="ADDONS">
     if MDT_NPT and MDT_NPT.ToggleBeaconLock then MDT_NPT:ToggleBeaconLock() end
   </Binding>
-  <Binding name="MDTNPT_SETTINGS" header="MDTNPT_HEADER" category="ADDONS">
+  <Binding name="MDTNPT_SETTINGS" category="ADDONS">
     if MDT_NPT and MDT_NPT.Settings and MDT_NPT.Settings.Open then MDT_NPT.Settings:Open() end
   </Binding>
 </Bindings>

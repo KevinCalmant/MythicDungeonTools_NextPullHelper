@@ -12,6 +12,11 @@ All notable changes to this project are documented here. The format is based on 
 - Key bindings under WoW's Esc → Key Bindings → Addons (header "MDT Next Pull Tracker"): Toggle Beacon, Next Pull, Previous Pull, Toggle Lock, Open Settings. The Next/Previous bindings reuse the same logic as the on-beacon control buttons, so step-forward/back works without aiming the cursor.
 - Right-click "Open Settings" entry on the beacon as a discoverability bridge from the context menu to the new panel.
 
+### Fixed
+
+- `Bindings.xml` is now auto-loaded from the addon root and no longer referenced from the TOC, and the bogus `xmlns` declaration on the `<Bindings>` root has been removed. Listing it under `Core.lua` routed it through the generic XML loader (which expects a `<Ui>` root) and produced "Couldn't open Bindings.xml"; the namespace mis-attribution made WoW treat each `<Binding>` as an unknown element from the Ui namespace.
+- Section header (`MDTNPT_HEADER`) is now declared on the first binding only, rather than on every binding. WoW registers the header from each `<Binding>` that carries the attribute, so duplicating it raised "Binding header MDTNPT_HEADER was attempted to be loaded more than once" once per extra binding.
+
 ## [1.1.7] - 2026-05-08
 
 ### Added
